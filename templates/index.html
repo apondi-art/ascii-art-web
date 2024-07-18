@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asci-Art Web</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/styling.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Generate Ascii Art</h1>
+        <form action="./ascii-art" method="post">
+            <label for="input" class="input-label">Enter Text Here</label><br><br>
+            {{if .Input}}
+            <textarea name="input" id="input" required>{{.Input}}</textarea><br><br>
+            {{else}}
+            <textarea name="input" id="input" required></textarea><br><br>
+            {{end}}
+            <label for="filename" class="input-label">Select Banner File:</label>
+            <select name="filename" id="file">
+                <option value="standard.txt">standard</option>
+                <option value="shadow.txt">shadow</option>
+                <option value="thinkertoy.txt">thinkertoy</option>
+            
+
+            </select>
+            <input type="submit" value="Generate"><br>
+        </form>
+        {{if .Result}}
+       <textarea class="result">{{ .Result}}</textarea> 
+       {{else}}
+       <textarea class="result"></textarea> 
+       {{end}}
+
+    </div> 
+</body>
+</html>
