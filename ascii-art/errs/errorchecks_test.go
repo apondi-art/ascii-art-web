@@ -33,26 +33,6 @@ func TestIsPrintableAscii(t *testing.T) {
 			input:       "goürd",
 			expectedErr: "ü: Not within the printable ascii range",
 		},
-		{
-			name:        "Escape Character \\f",
-			input:       "go\\fhome",
-			expectedErr: "\\f: Not within the printable ascii range",
-		},
-		{
-			name:        "Escape Character \\r",
-			input:       "go\\rhome",
-			expectedErr: "\\r: Not within the printable ascii range",
-		},
-		{
-			name:        "Escape Character \\v",
-			input:       "go\\vhome",
-			expectedErr: "\\v: Not within the printable ascii range",
-		},
-		{
-			name:        "Escape Character \\a",
-			input:       "go\\ahome",
-			expectedErr: "\\a: Not within the printable ascii range",
-		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -105,86 +85,4 @@ func TestCheckFileTamper(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestCheckFile(t *testing.T) {
-	testcases := []struct {
-		file     string
-		expected bool
-	}{
-		{
-			file:     "standard",
-			expected: true,
-		},
-		{
-			file:     "SHADOW",
-			expected: true,
-		},
-		{
-			file:     "thinkertoy",
-			expected: true,
-		},
-		{
-			file:     "STANDRD",
-			expected: false,
-		},
-		{
-			file:     "",
-			expected: false,
-		},
-	}
-	for _, tc := range testcases {
-		t.Run(tc.file, func(t *testing.T) {
-			result := CheckFile(tc.file)
-			if result != tc.expected {
-				t.Errorf("CheckFile(%s) is : %v ; want %v\n", tc.file, result, tc.expected)
-			}
-		})
-	}
-}
-
-func TestValidateFlag(t *testing.T) {
-	tests := []struct {
-		name    string
-		args    []string
-		wantErr bool
-	}{
-		{
-			name:    "invalid flag 1",
-			args:    []string{"ascii-art-color", "-color=red", "Hello"},
-			wantErr: true,
-		},
-		{
-			name:    "invalid flag 2",
-			args:    []string{"ascii-art-color", "-color", "red", "Hello"},
-			wantErr: true,
-		},
-		{
-			name:    "valid flag",
-			args:    []string{"ascii-art-color", "--color=red", "World", "Hello World"},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			runTestWithArgs(t, tt.args, tt.wantErr)
-		})
-	}
-}
-
-func runTestWithArgs(t *testing.T, args []string, wantErr bool) {
-	// Save the original flags and restore them after the test
-	originalArgs := os.Args
-	defer func() {
-		os.Args = originalArgs
-	}()
-
-	// Set os.Args to the test case's arguments
-	os.Args = args
-	err := ValidateFlag()
-	if (err != nil) != wantErr {
-		t.Errorf("ProcessArgs() error = %v, wantErr %v", err, wantErr)
-		return
-	}
-
 }

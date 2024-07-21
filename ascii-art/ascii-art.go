@@ -1,8 +1,9 @@
-// Package main is the entry point for the application.
-// It prints the ascii representation based on arguments passed.
-package asciiprint
+// Package art returns the ascii art representation
+// of a string given a banner filename
+package art
 
 import (
+	"fmt"
 	"strings"
 
 	"ascii-art-web/ascii-art/ascii"
@@ -10,10 +11,9 @@ import (
 	"ascii-art-web/ascii-art/errs"
 )
 
-func CheckPrint(str, filename string) (string, error) {
-	var result strings.Builder
-	// Check that str & substr are printable characters
+func AsciiArt(str, filename string) (string, error) {
 	str = strings.ReplaceAll(str, "\r\n", "\n")
+
 	if err := errs.IsPrintableAscii(str); err != nil {
 		return "", err
 	}
@@ -23,22 +23,23 @@ func CheckPrint(str, filename string) (string, error) {
 		return "", err
 	}
 
-	// Split the str & substr by "\\n" to get the string section in each line
 	strs := strings.Split(str, "\n")
 	count := 0 // tracks empty strings after splitting str with \n
-
+	var art strings.Builder
 	for _, s := range strs {
 		if s == "" {
 			count++
 			if count < len(strs) {
-				result.WriteString("\n")
+				art.WriteString("\n")
+				fmt.Println()
 			}
+		} else {
+			args := &ascii.PrintArgs{
+				Str:        s,
+				Characters: contentSlice,
+			}
+			art.WriteString(ascii.PrintAscii(args))
 		}
-		args := &ascii.PrintArgs{
-			Str:        s,
-			Characters: contentSlice,
-		}
-		result.WriteString(ascii.PrintAscii(args))
 	}
-	return result.String(), nil
+	return art.String(), nil
 }

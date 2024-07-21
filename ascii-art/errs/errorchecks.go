@@ -5,8 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"os"
-	"strings"
 )
 
 // IsPrintableAscii checks if the given string contains only printable ASCII characters.
@@ -15,8 +13,7 @@ func IsPrintableAscii(str string) error {
 	var nonPrintables string
 	errMessage := ": Not within the printable ascii range"
 	for _, char := range str {
-		isNonPrintable := ((char < ' ' || char > '~') && char != '\n')
-
+		isNonPrintable := (char < ' ' || char > '~') && char != '\n'
 		if isNonPrintable {
 			nonPrintables += string(char)
 		}
@@ -24,7 +21,6 @@ func IsPrintableAscii(str string) error {
 	if nonPrintables != "" {
 		return fmt.Errorf("%s%s", nonPrintables, errMessage)
 	}
-
 	return nil
 }
 
@@ -40,44 +36,6 @@ func CheckFileTamper(file string, content []byte) error {
 	computedChecksum := hex.EncodeToString(checksum[:])
 	if computedChecksum != expectedChecksum[file] {
 		return fmt.Errorf("%s tampered", file)
-	}
-	return nil
-}
-
-// CheckFile checks if the given filename corresponds to know banner file.
-// It returns true if the string matches one of the files and false otherwise.
-func CheckFile(s string) bool {
-	files := []string{"standard", "shadow", "thinkertoy"}
-	for _, file := range files {
-		if file == strings.ToLower(s) {
-			return true
-		}
-	}
-	return false
-}
-
-// ValidateFlag validates command-line flags passed to the program.
-// It returns an error if the flags are not used according to the expected usage.
-func ValidateFlag() error {
-	usage := fmt.Errorf(`Usage: go run . [OPTION] [STRING]
-
-EX: go run . --color=<color> <substring to be colored> "something"`)
-	seenFlags := make(map[string]bool) // tracks duplication
-	for _, arg := range os.Args[1:] {
-		if strings.HasPrefix(arg, "-") {
-			if !strings.HasPrefix(arg, "--color=") {
-				return usage
-			} else {
-				flagName := "--color="
-				if arg[8:] == "" {
-					return usage
-				}
-				if seenFlags[flagName] {
-					return usage
-				}
-				seenFlags[flagName] = true
-			}
-		}
 	}
 	return nil
 }
